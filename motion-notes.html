@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Motion Notes - Avanify</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            background: #000;
+            overflow: hidden;
+            font-family: 'DM Sans', sans-serif;
+
+        }
+
+        /* SLIDER */
+
+        .slider {
+
+            width: 100vw;
+            height: 100vh;
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+        /* SLIDE */
+
+        .slide {
+
+            position: absolute;
+
+            width: 100%;
+            height: 100%;
+
+            top: 0;
+            left: 0;
+
+            opacity: 0;
+
+            transition: 0.4s ease;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: black;
+
+        }
+
+        .slide.active {
+
+            opacity: 1;
+            z-index: 2;
+
+        }
+
+        /* IMAGE */
+
+        .slide img {
+
+            max-width: 100%;
+            max-height: 100%;
+
+            object-fit: contain;
+
+        }
+
+        /* TOP INFO */
+
+        .top-bar {
+
+            position: fixed;
+
+            top: 20px;
+            left: 20px;
+
+            z-index: 100;
+
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+        }
+
+        /* BACK BUTTON */
+
+        .back-btn {
+
+            padding: 12px 18px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border: 1px solid rgba(255, 255, 255, 0.15);
+
+            backdrop-filter: blur(20px);
+
+            border-radius: 14px;
+
+            text-decoration: none;
+
+            color: white;
+
+            font-weight: 700;
+
+            transition: 0.3s;
+
+        }
+
+        .back-btn:hover {
+
+            background: rgba(255, 255, 255, 0.18);
+
+        }
+
+        /* TITLE */
+
+        .title {
+
+            color: white;
+
+            font-size: 1rem;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            padding: 12px 18px;
+
+            border-radius: 14px;
+
+            backdrop-filter: blur(20px);
+
+        }
+
+        /* SLIDE NUMBER */
+
+        .slide-number {
+
+            position: fixed;
+
+            bottom: 20px;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            background: rgba(255, 255, 255, 0.1);
+
+            padding: 12px 18px;
+
+            border-radius: 20px;
+
+            color: white;
+
+            backdrop-filter: blur(20px);
+
+            z-index: 100;
+
+        }
+
+        /* ARROWS */
+
+        .arrow {
+
+            position: fixed;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 60px;
+            height: 60px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            backdrop-filter: blur(20px);
+
+            border: 1px solid rgba(255, 255, 255, 0.12);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 2rem;
+
+            color: white;
+
+            cursor: pointer;
+
+            z-index: 100;
+
+            transition: 0.3s;
+
+        }
+
+        .arrow:hover {
+
+            background: rgba(255, 255, 255, 0.18);
+
+        }
+
+        .left-arrow {
+            left: 20px;
+        }
+
+        .right-arrow {
+            right: 20px;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:768px) {
+
+            .arrow {
+
+                width: 48px;
+                height: 48px;
+
+                font-size: 1.5rem;
+
+            }
+
+            .title {
+
+                font-size: 0.8rem;
+
+            }
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- TOP BAR -->
+
+    <div class="top-bar">
+
+        <a href="chapters.html" class="back-btn">
+            ← Back
+        </a>
+
+        <div class="title">
+            🚀 Motion Visual Notes
+        </div>
+
+    </div>
+
+    <!-- SLIDER -->
+
+    <div class="slider" id="slider">
+
+        <!-- SLIDES GENERATED HERE -->
+
+    </div>
+
+    <!-- ARROWS -->
+
+    <div class="arrow left-arrow" onclick="prevSlide()">
+        ❮
+    </div>
+
+    <div class="arrow right-arrow" onclick="nextSlide()">
+        ❯
+    </div>
+
+    <!-- SLIDE NUMBER -->
+
+    <div class="slide-number" id="slideNumber">
+        1 / 17
+    </div>
+
+    <script>
+
+        // ============================================
+        // SETTINGS
+        // ============================================
+
+        const TOTAL_SLIDES = 17;
+
+        const slider = document.getElementById('slider');
+
+        let currentSlide = 0;
+
+        // ============================================
+        // CREATE SLIDES
+        // ============================================
+
+        for (let i = 1; i <= TOTAL_SLIDES; i++) {
+
+            slider.innerHTML += `
+
+<div class="slide ${i === 1 ? 'active' : ''}">
+
+<img src="${i}.png">
+
+</div>
+
+`;
+
+        }
+
+        const slides = document.querySelectorAll('.slide');
+
+        // ============================================
+        // UPDATE SLIDES
+        // ============================================
+
+        function updateSlides() {
+
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+
+            slides[currentSlide].classList.add('active');
+
+            document.getElementById('slideNumber').innerHTML =
+                `${currentSlide + 1} / ${TOTAL_SLIDES}`;
+
+        }
+
+        // ============================================
+        // NEXT SLIDE
+        // ============================================
+
+        function nextSlide() {
+
+            if (currentSlide < TOTAL_SLIDES - 1) {
+
+                currentSlide++;
+
+                updateSlides();
+
+            }
+
+        }
+
+        // ============================================
+        // PREVIOUS SLIDE
+        // ============================================
+
+        function prevSlide() {
+
+            if (currentSlide > 0) {
+
+                currentSlide--;
+
+                updateSlides();
+
+            }
+
+        }
+
+        // ============================================
+        // KEYBOARD CONTROLS
+        // ============================================
+
+        document.addEventListener('keydown', (e) => {
+
+            if (e.key === 'ArrowRight') {
+                nextSlide();
+            }
+
+            if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+
+        });
+
+        // ============================================
+        // TOUCH SWIPE SUPPORT
+        // ============================================
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+
+            touchStartX = e.changedTouches[0].screenX;
+
+        });
+
+        document.addEventListener('touchend', (e) => {
+
+            touchEndX = e.changedTouches[0].screenX;
+
+            handleSwipe();
+
+        });
+
+        function handleSwipe() {
+
+            if (touchEndX < touchStartX - 50) {
+                nextSlide();
+            }
+
+            if (touchEndX > touchStartX + 50) {
+                prevSlide();
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
